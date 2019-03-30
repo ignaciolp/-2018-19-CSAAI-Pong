@@ -77,8 +77,7 @@ function drawText(text,x,y){
     ctx.fillText(text, x, y);
 }
 
-function update(){
-
+// movimiento de palas
 window.onkeydown = (e) =>{
   e.preventDefault();
   // jugador 1
@@ -96,6 +95,37 @@ window.onkeydown = (e) =>{
     user2.y = (user2.y +10);
   }
   }
+
+// when COM or USER scores, we reset the ball
+function resetBall(){
+  ball.x = canvas.width/2;
+  ball.y = canvas.height/2;
+  ball.velocityX = -ball.velocityX;
+  ball.speed = 7;
+
+}
+
+function update(){
+
+  // Puntuacion cuando la pelota toca el ancho del canvas
+  if( ball.x - ball.radius < 0 ){
+      user2.score+=1;
+      resetBall();
+  }else if( ball.x + ball.radius > canvas.width){
+      user1.score+=1;
+      resetBall();
+  }
+
+  // La bola tiene velocidad
+  ball.x += ball.velocityX;
+  ball.y += ball.velocityY;
+
+  // la bola cambia de direccion cuando choca con el largo del canvas
+  if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height){
+      ball.velocityY = -ball.velocityY;
+      wall.play();
+  }
+
 }
 function render(){
 
