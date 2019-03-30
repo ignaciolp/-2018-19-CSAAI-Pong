@@ -4,6 +4,8 @@ const canvas = document.getElementById("pong");
 // Para dibujar en canvas
 const ctx = canvas.getContext('2d');
 
+
+
 // objeto bola
 const ball = {
     x : canvas.width/2,
@@ -75,6 +77,26 @@ function drawText(text,x,y){
     ctx.fillText(text, x, y);
 }
 
+function update(){
+
+window.onkeydown = (e) =>{
+  e.preventDefault();
+  // jugador 1
+  if (e.key == 's'){
+    //s mueve jugador 1 arriba
+    user1.y = user1.y -10;
+  } else if (e.key == 'd') {
+    //s mueve jugador 1 abajo
+    user1.y = user1.y +10;
+  } else if (e.key == 'k') {
+    //k mueve jugador 2 arriba
+    user2.y = user2.y -10;
+  } else if (e.key == 'l') {
+    //l mueve jugador 2 abajo
+    user2.y = (user2.y +10);
+  }
+  }
+}
 function render(){
 
     // limpiamos canvas
@@ -98,9 +120,14 @@ function render(){
     // dibujamos bola
     drawArc(ball.x, ball.y, ball.radius, ball.color);
 }
+
+
+
 function game(){
 
+    update();
     render();
+
 }
 // numero de frames por segundo
 let framePerSecond = 50;
