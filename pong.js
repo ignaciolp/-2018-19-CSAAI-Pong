@@ -99,16 +99,35 @@ window.onkeydown = (e) =>{
   // jugador 1
   if (e.key == 's'){
     //s mueve jugador 1 arriba
-    user1.y = user1.y - user1.move_paddle;
+    if (user1.y == 0){
+      user1.y = user1.y - 0;
+    }else{
+      user1.y = user1.y - user1.move_paddle;
+    }  
+
   } else if (e.key == 'd') {
     //s mueve jugador 1 abajo
-    user1.y = user1.y + user1.move_paddle;
+    if (user1.y == 300){
+      user1.y = user1.y - 0;
+    }else{
+      user1.y = user1.y + user1.move_paddle;
+    }
+
   } else if (e.key == 'k') {
     //k mueve jugador 2 arriba
-    user2.y = user2.y - user2.move_paddle;
+    if (user2.y == 0){
+      user2.y = user2.y - 0;
+    }else{
+      user2.y = user2.y - user2.move_paddle;
+    }
+
   } else if (e.key == 'l') {
     //l mueve jugador 2 abajo
-    user2.y = user2.y + user2.move_paddle;
+    if (user2.y == 300){
+      user2.y = user2.y - 0;
+    }else{
+      user2.y = user2.y + user2.move_paddle;
+    }
   }
 }
 
