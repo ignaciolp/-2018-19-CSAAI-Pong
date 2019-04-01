@@ -4,8 +4,6 @@ const canvas = document.getElementById("pong");
 // Para dibujar en canvas
 const ctx = canvas.getContext('2d');
 
-
-
 // objeto bola
 const ball = {
     x : canvas.width/2,
@@ -19,22 +17,24 @@ const ball = {
 
 // Pala del usuario 1
 const user1 = {
-    x : 0, // left side of canvas
-    y : (canvas.height - 100)/2, // -100 the height of paddle
+    x : 0, // lado izquierdo del canvas
+    y : (canvas.height - 100)/2, // restamos el alto  de la pala y lo dividimos entre 2 para situarla en el centro
     width : 10,
     height : 100,
     score : 0,
-    color : "WHITE"
+    color : "WHITE",
+    move_paddle:50
 }
 
 // Pala del usuario 2
 const user2 = {
-    x : canvas.width - 10, // - width of paddle
-    y : (canvas.height - 100)/2, // -100 the height of paddle
+    x : canvas.width - 10, // restamos el ancho de  la pala
+    y : (canvas.height - 100)/2, //
     width : 10,
     height : 100,
     score : 0,
-    color : "WHITE"
+    color : "WHITE",
+    move_paddle:50
 }
 
 // RED
@@ -77,26 +77,42 @@ function drawText(text,x,y){
     ctx.fillText(text, x, y);
 }
 
+// collision detection
+// la funcion colision devuelve true o false, si hay colicion devuelve true si no false, la b por ball y p de player
+function collision(b,p){
+    p.top = p.y;
+    p.bottom = p.y + p.height;
+    p.left = p.x;
+    p.right = p.x + p.width;
+
+    b.top = b.y - b.radius;
+    b.bottom = b.y + b.radius;
+    b.left = b.x - b.radius;
+    b.right = b.x + b.radius;
+
+    return p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top;
+}
+
 // movimiento de palas
 window.onkeydown = (e) =>{
   e.preventDefault();
   // jugador 1
   if (e.key == 's'){
     //s mueve jugador 1 arriba
-    user1.y = user1.y -10;
+    user1.y = user1.y - user1.move_paddle;
   } else if (e.key == 'd') {
     //s mueve jugador 1 abajo
-    user1.y = user1.y +10;
+    user1.y = user1.y + user1.move_paddle;
   } else if (e.key == 'k') {
     //k mueve jugador 2 arriba
-    user2.y = user2.y -10;
+    user2.y = user2.y - user2.move_paddle;
   } else if (e.key == 'l') {
     //l mueve jugador 2 abajo
-    user2.y = (user2.y +10);
+    user2.y = user2.y + user2.move_paddle;
   }
-  }
+}
 
-// when COM or USER scores, we reset the ball
+// reseteamos la bola cuando uno de los dos marca
 function resetBall(){
   ball.x = canvas.width/2;
   ball.y = canvas.height/2;
@@ -105,6 +121,7 @@ function resetBall(){
 
 }
 
+// funcion de actualizar la posicion y comportamiento de la bola en el juego
 function update(){
 
   // Puntuacion cuando la pelota toca el ancho del canvas
@@ -123,7 +140,29 @@ function update(){
   // la bola cambia de direccion cuando choca con el largo del canvas
   if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height){
       ball.velocityY = -ball.velocityY;
-      wall.play();
+  }
+  let player = (ball.x + ball.radius < canvas.width/2) ? user1 : user2; //variable local de la funcion, no es variable global. ? es un if si se cumpla la funcion plaeyer sera user si no user
+  // si la bola golpea la pala
+  if(collision(ball,player)){
+      // comprobamos donde golpea la bola la pala
+      let collidePoint = (ball.y - (player.y + player.height/2));
+      // normalizar el valor de collidePoint, necesitamos obtener números entre -1 y 1
+      // -jugado.height / 2 <punto de colisión <player.height / 2
+      collidePoint = collidePoint / (player.height/2);
+
+      // cuando la pelota golpea la parte superior de una paleta, queremos que la pelota tome un ángulo de -45degees
+      // cuando la pelota golpea el centro de la paleta, queremos que la pelota tome un ángulo de 0 grados
+      // cuando la pelota golpee el fondo de la paleta, queremos que la pelota tome 45 grados
+      // Matemáticas.PI / 4 = 45 grados
+      let angleRad = (Math.PI/4) * collidePoint;
+
+      // cambiar la dirección de la velocidad X e Y
+      let direction = (ball.x + ball.radius < canvas.width/2) ? 1 : -1; // let variable local / ? if
+      ball.velocityX = direction * ball.speed * Math.cos(angleRad);
+      ball.velocityY = ball.speed * Math.sin(angleRad);
+
+      // acelera la pelota cada vez que una paleta la golpea.
+      ball.speed += 0.1;
   }
 
 }
