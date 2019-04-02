@@ -34,7 +34,8 @@ const user2 = {
     height : 100,
     score : 0,
     color : "WHITE",
-    move_paddle:50
+    move_paddle:50,
+    win: "Gana jugador 1"
 }
 
 // RED
@@ -93,6 +94,20 @@ function collision(b,p){
     return p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top;
 }
 
+function winner(){
+  if (user1.score == 7){
+    //-- Texto trazo
+  ctx.strokeStyle = 'WHITE';
+  ctx.font = "35px Arial";
+  ctx.strokeText("Gana jugador 1", canvas.width/2 - 120, canvas.height/2-30);
+
+} else if (user2.score == 7){
+  ctx.strokeStyle = 'WHITE';
+  ctx.font = "35px Arial";
+  ctx.strokeText("Gana jugador 2", canvas.width/2 - 120, canvas.height/2-30);
+}
+}
+
 // movimiento de palas
 window.onkeydown = (e) =>{
   e.preventDefault();
@@ -103,8 +118,7 @@ window.onkeydown = (e) =>{
       user1.y = user1.y - 0;
     }else{
       user1.y = user1.y - user1.move_paddle;
-    }  
-
+    }
   } else if (e.key == 'd') {
     //s mueve jugador 1 abajo
     if (user1.y == 300){
@@ -152,36 +166,41 @@ function update(){
       resetBall();
   }
 
-  // La bola tiene velocidad
-  ball.x += ball.velocityX;
-  ball.y += ball.velocityY;
+  if (user1.score == 7 || user2.score == 7 ){
+    // cuando llegamos a 7 fin de la partida, no sigue actualizando el movimiento de la bola
 
-  // la bola cambia de direccion cuando choca con el largo del canvas
-  if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height){
-      ball.velocityY = -ball.velocityY;
-  }
-  let player = (ball.x + ball.radius < canvas.width/2) ? user1 : user2; //variable local de la funcion, no es variable global. ? es un if si se cumpla la funcion plaeyer sera user si no user
-  // si la bola golpea la pala
-  if(collision(ball,player)){
-      // comprobamos donde golpea la bola la pala
-      let collidePoint = (ball.y - (player.y + player.height/2));
-      // normalizar el valor de collidePoint, necesitamos obtener números entre -1 y 1
-      // -jugado.height / 2 <punto de colisión <player.height / 2
-      collidePoint = collidePoint / (player.height/2);
+  }else{
+    // La bola tiene velocidad
+    ball.x += ball.velocityX;
+    ball.y += ball.velocityY;
 
-      // cuando la pelota golpea la parte superior de una paleta, queremos que la pelota tome un ángulo de -45degees
-      // cuando la pelota golpea el centro de la paleta, queremos que la pelota tome un ángulo de 0 grados
-      // cuando la pelota golpee el fondo de la paleta, queremos que la pelota tome 45 grados
-      // Matemáticas.PI / 4 = 45 grados
-      let angleRad = (Math.PI/4) * collidePoint;
+    // la bola cambia de direccion cuando choca con el largo del canvas
+    if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height){
+        ball.velocityY = -ball.velocityY;
+    }
+    let player = (ball.x + ball.radius < canvas.width/2) ? user1 : user2; //variable local de la funcion, no es variable global. ? es un if si se cumpla la funcion plaeyer sera user si no user
+    // si la bola golpea la pala
+    if(collision(ball,player)){
+        // comprobamos donde golpea la bola la pala
+        let collidePoint = (ball.y - (player.y + player.height/2));
+        // normalizar el valor de collidePoint, necesitamos obtener números entre -1 y 1
+        // -jugado.height / 2 <punto de colisión <player.height / 2
+        collidePoint = collidePoint / (player.height/2);
 
-      // cambiar la dirección de la velocidad X e Y
-      let direction = (ball.x + ball.radius < canvas.width/2) ? 1 : -1; // let variable local / ? if
-      ball.velocityX = direction * ball.speed * Math.cos(angleRad);
-      ball.velocityY = ball.speed * Math.sin(angleRad);
+        // cuando la pelota golpea la parte superior de una paleta, queremos que la pelota tome un ángulo de -45degees
+        // cuando la pelota golpea el centro de la paleta, queremos que la pelota tome un ángulo de 0 grados
+        // cuando la pelota golpee el fondo de la paleta, queremos que la pelota tome 45 grados
+        // Matemáticas.PI / 4 = 45 grados
+        let angleRad = (Math.PI/4) * collidePoint;
 
-      // acelera la pelota cada vez que una paleta la golpea.
-      ball.speed += 0.1;
+        // cambiar la dirección de la velocidad X e Y
+        let direction = (ball.x + ball.radius < canvas.width/2) ? 1 : -1; // let variable local / ? if
+        ball.velocityX = direction * ball.speed * Math.cos(angleRad);
+        ball.velocityY = ball.speed * Math.sin(angleRad);
+
+        // acelera la pelota cada vez que una paleta la golpea.
+        ball.speed += 0.1;
+    }
   }
 
 }
@@ -207,6 +226,11 @@ function render(){
 
     // dibujamos bola
     drawArc(ball.x, ball.y, ball.radius, ball.color);
+
+    // nos escribe el ganador de la partida cuando llegamos a siete
+    winner();
+
+
 }
 
 
