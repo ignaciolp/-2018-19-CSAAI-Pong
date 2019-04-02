@@ -4,6 +4,17 @@ const canvas = document.getElementById("pong");
 // Para dibujar en canvas
 const ctx = canvas.getContext('2d');
 
+// load sounds
+let hit = new Audio();
+let wall = new Audio();
+let user1Score = new Audio();
+let user2Score = new Audio();
+
+hit.src = "sounds/hit.mp3";
+wall.src = "sounds/wall.mp3";
+user2Score.src = "sounds/comScore.mp3";
+user1Score.src = "sounds/userScore.mp3";
+
 // objeto bola
 const ball = {
     x : canvas.width/2,
@@ -160,9 +171,13 @@ function update(){
   // Puntuacion cuando la pelota toca el ancho del canvas
   if( ball.x - ball.radius < 0 ){
       user2.score+=1;
+      //sonido
+      user2Score.play();
       resetBall();
   }else if( ball.x + ball.radius > canvas.width){
       user1.score+=1;
+      //sonido
+      user1Score.play();
       resetBall();
   }
 
@@ -177,10 +192,14 @@ function update(){
     // la bola cambia de direccion cuando choca con el largo del canvas
     if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height){
         ball.velocityY = -ball.velocityY;
+        //sonido
+        wall.play();
     }
     let player = (ball.x + ball.radius < canvas.width/2) ? user1 : user2; //variable local de la funcion, no es variable global. ? es un if si se cumpla la funcion plaeyer sera user si no user
     // si la bola golpea la pala
     if(collision(ball,player)){
+        //sonido
+        hit.play();
         // comprobamos donde golpea la bola la pala
         let collidePoint = (ball.y - (player.y + player.height/2));
         // normalizar el valor de collidePoint, necesitamos obtener números entre -1 y 1
