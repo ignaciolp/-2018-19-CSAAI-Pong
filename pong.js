@@ -119,8 +119,8 @@ function winner(){
 }
 }
 
-// movimiento de palas
-window.onkeydown = (e) =>{
+// movimiento de palas con teclas
+/**window.onkeydown = (e) =>{
   e.preventDefault();
   // jugador 1
   if (e.key == 's'){
@@ -154,6 +154,15 @@ window.onkeydown = (e) =>{
       user2.y = user2.y + user2.move_paddle;
     }
   }
+}**/
+
+// movimiento del user 1 con raton
+canvas.addEventListener("mousemove", getMousePos);
+
+function getMousePos(evt){
+    let rect = canvas.getBoundingClientRect();
+
+    user1.y = evt.clientY - rect.top - user1.height/2;
 }
 
 // reseteamos la bola cuando uno de los dos marca
@@ -188,6 +197,9 @@ function update(){
     // La bola tiene velocidad
     ball.x += ball.velocityX;
     ball.y += ball.velocityY;
+
+    // Automatizacion del jugador 2
+    user2.y += ((ball.y - (user2.y + user2.height/2)))*0.1;
 
     // la bola cambia de direccion cuando choca con el largo del canvas
     if(ball.y - ball.radius < 0 || ball.y + ball.radius > canvas.height){
